@@ -1,0 +1,359 @@
+django-admin startproject firstProject	 # Creation of Django project 
+py manage.py startapp firstApp			 # Creation of Application in that project 
+										 # Add application to the Project (inside settings.py)
+										 # Define view function inside views.py 
+										 # Define url-pattern for our view inside urls.py
+django-admin migrate                     # synchronize the database state with your current state project models and migrations
+django-admin makemigrations              # create new migrations to the database based on the changes detected in the models
+py manage.py runserver					 # Start Server 
+										 # Send the request
+										 
+										 
+										 
+										 
+Project Initialization
+Create models
+Create views
+Write urls
+Carry out request with Jquery AJax.
+Register models to admin and add some posts.
+
+==================================================
+
+Django Views.py
+---------------
+
+from django.http import HttpResponse, HttpResponseRedirect
+
+
+def index(request):
+	print(request.method)							# GET
+	print(request.is_ajax())						# False
+	return HttpResponse("<h1>Hello World!</h1>")	# return HTML response
+	
+	return HttpResponseRedirect("/some/path")		# redirect to 127.0.0.1/some/path
+	
+def index(request):
+	response = HttpResponse()						# GET
+	response.write("<h1>Hello World!</h1>")
+	response.write("<h1>Hello World!</h1>")
+	response.write("<h1>Hello World!</h1>")
+	response.content = "<h1>Hello World2</h1>"		# overwrite reponse with Hellow World2
+	response.status_code = 200						# 200 or 404 Check in console
+	return response									# return HTML response
+
+=================================================
+
+Register app in admin menu app/admin.py
+---------------
+
+from .models import ClassName
+
+admin.site.register(ClassName)
+
+=================================================
+
+HTML Templates
+--------------
+
+1) templates/base.html
+	
+	<!doctype html>
+	<html lang="en">
+		<head>
+		  <meta charset="utf-8">
+		  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+		</head>
+		<body>
+		  <div class="container">
+			{% block content %}
+			{% endblock %}
+		  </div>
+		</body>
+	</html>
+
+2) Extend template
+
+	{% extends 'base.html' %}
+
+	{% load crispy_forms_tags %}
+
+	{% block content %}
+	  <form method="post">
+		{% csrf_token %}
+		{{ form|crispy }}
+		<button type="submit" class="btn btn-primary">Sign in</button>
+	  </form>
+	{% endblock %}
+=================================================
+
+FORMS
+-----
+Two types - 1) Django forms
+			2) HTML forms
+
+1) Django Forms
+---------------
+
+	1) Create form in html template
+
+	<form method='GET' action="">		# Link this with url.py. blank for same page
+		{{ form }}
+		<input type="submit" value="Submit">
+	</form> 
+
+	2) Create forms.py in app folder
+
+	from django import forms		# import forms
+	class Myform(forms.Form):		# define class
+		name = forms.CharField(label="Your name",max_length=100)	# label ot print infront of field
+		message = forms.CharField(widget=forms.Textarea)
+		sender = forms.EmailField()
+		cc_myself = forms.BooleanField(required=False)
+		
+	3) import created form in app/views.py
+
+	from .forms import Myform								# imported from forms.py
+	def index(request):
+    	if request.method == 'POST':						# if this is a POST request we need to process the form data
+			form = Myform(request.POST)						# create a form instance and populate it with data from the request:
+			if form.is_valid():								# check whether it's valid:
+				print(form.cleaned_data.get('name'))		# process the data in form.cleaned_data as required
+				return HttpResponseRedirect('/thanks/')		# redirect to a new URL:
+				# return HttpResponse("<h1>" + form.cleaned_data.get("name") + "</h1>")
+		else:												# if a GET (or any other method) we'll create a blank form			
+			form = Myform()
+
+		return render(request, 'index.html', {'form': form})
+	
+	
+2) HTML Forms
+---------------	
+
+	1) Create form in html template
+	
+	<form method='POST' action="/">{% csrf_token %}			# Link this with url.py
+	  First name:<br>
+	  <input type="text" name="firstname" value="Mickey">
+	  <br>
+	  Last name:<br>
+	  <input type="text" name="lastname" value="Mouse">
+	  <br><br>
+	  <input type="submit" value="Submit">
+	</form>
+	
+	2) app/views.py
+	
+	if request.method == "POST":
+		fname = request.POST["firstname"]		# one type
+		html = ("<H1>"+fname+"</H1>")
+		return HttpResponse(html)
+	elif request.method == "GET":				
+		print(request.GET.get("lastname"))		# another type
+		
+	return render(request,'index.html')
+
+
+2) Crispy Forms(Form handling with class-based views) - 
+https://simpleisbetterthancomplex.com/tutorial/2018/11/28/advanced-form-rendering-with-django-crispy-forms.html
+---------------	
+
+	0) Install pip install django-crispy-forms
+
+	1) Add app 'crispy_forms' in settings.py
+	  and add CRISPY_TEMPLATE_PACK = "bootstrap4"		#small cap
+	
+	2) templates/base.html
+	
+		<!doctype html>
+		<html lang="en">
+			<head>
+			  <meta charset="utf-8">
+			  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+			  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+			</head>
+			<body>
+			  <div class="container">
+				{% block content %}
+				{% endblock %}
+			  </div>
+			</body>
+		</html>
+		
+	3) app/forms.py
+	
+		from django import forms
+		# from crispy_forms.helper import FormHelper		# Form helper is use to generate form using django form
+		# from crispy_forms.layout import Layout, Div, Submit, Row, Column, Field 	# Also to layout html content in form
+
+
+		STATES = (
+			('', 'Choose...'),
+			('MG', 'Minas Gerais'),
+			('SP', 'Sao Paulo'),
+			('RJ', 'Rio de Janeiro')
+		)
+
+		class AddressForm(forms.Form):
+			email = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Email'}))
+			password = forms.CharField(widget=forms.PasswordInput())
+			address_1 = forms.CharField(label='Address', widget=forms.TextInput(attrs={'placeholder': '1234 Main St'}))
+			address_2 = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Apartment, studio, or floor'}))
+			city = forms.CharField()
+			state = forms.ChoiceField(choices=STATES)
+			zip_code = forms.CharField(label='Zip')
+			check_me_out = forms.BooleanField(required=False)
+			
+	4) app/views.py
+	
+		from django.views.generic import FormView, TemplateView	
+		from django.urls import reverse_lazy
+		from .forms import AddressForm
+
+		class AddressFormView(FormView):				# Class based
+			form_class = AddressForm
+			success_url = reverse_lazy('success')		# used here to show success.html after form submission. mapped with url.py
+			
+		# class SuccessView(TemplateView):
+			# template_name = "success.html"
+			
+		OR
+		---
+		
+		from django.shortcuts import render				# Function based
+		def AddressFormView(request):
+			form_class = AddressForm
+			return render(request, "index.html", {"form": form_class})
+	
+
+	5) Write urls.py
+	    
+		path('', views.AddressFormView.as_view(template_name='index.html'), name='index'),	# for Class based
+		
+		OR
+		---
+		
+		path("", views.AddressFormView, name="index"),		# For Function based
+		
+		# path("success/", views.SuccessView.as_view(), name="success"),	# called from views.py
+
+
+	6) HTML should be rendered - templates/index.html 
+
+		{% extends 'base.html' %}
+
+		{% load crispy_forms_tags %}
+
+		{% block content %}
+		  <form method="post">
+			{% csrf_token %}
+			{{ form|crispy }}
+			<button type="submit" class="btn btn-primary">Sign in</button>
+		  </form>
+		{% endblock %}
+
+
+	7) Custom Fields Placement - if want field side by side
+
+		{% extends 'base.html' %}
+
+		{% load crispy_forms_tags %}
+
+		{% block content %}
+		  <form method="post">
+			{% csrf_token %}
+			<div class="form-row">
+			  <div class="form-group col-md-6 mb-0">
+				{{ form.email|as_crispy_field }}
+			  </div>
+			  <div class="form-group col-md-6 mb-0">
+				{{ form.password|as_crispy_field }}
+			  </div>
+			</div>
+			{{ form.address_1|as_crispy_field }}
+			{{ form.address_2|as_crispy_field }}
+			<div class="form-row">
+			  <div class="form-group col-md-6 mb-0">
+				{{ form.city|as_crispy_field }}
+			  </div>
+			  <div class="form-group col-md-4 mb-0">
+				{{ form.state|as_crispy_field }}
+			  </div>
+			  <div class="form-group col-md-2 mb-0">
+				{{ form.zip_code|as_crispy_field }}
+			  </div>
+			</div>
+			{{ form.check_me_out|as_crispy_field }}
+			<button type="submit" class="btn btn-primary">Sign in</button>
+		  </form>
+		{% endblock %}
+
+	8) success.html - To show message after form submission
+	
+		{% extends 'base.html' %}
+
+		{% block content %}
+		  <p class="text-success">Form processed with success!</p>
+		{% endblock %}
+
+=================================================
+
+Django CRUD
+-----------
+
+https://www.javatpoint.com/django-crud-example
+
+
+
+
+=================================================
+
+
+Fields
+---------------------
+
++---------------------------+---------------------------------------------------------------------------------------------------------+
+|        Model field        |                                               Form field                                                |
++---------------------------+---------------------------------------------------------------------------------------------------------+
+| AutoField                 | Not represented in the form                                                                             |
+| BigAutoField              | Not represented in the form                                                                             |
+| BigIntegerField           | IntegerField with min_value set to -9223372036854775808 and max_value set to 9223372036854775807.       |
+| BinaryField               | CharField, if editable is set to True on the model field, otherwise not represented in the form.        |
+| BooleanField              | BooleanField, or NullBooleanField if null=True.                                                         |
+| CharField                 | CharField with max_length set to the model field’s max_length and empty_value set to None if null=True. |
+| DateField                 | DateField                                                                                               |
+| DateTimeField             | DateTimeField                                                                                           |
+| DecimalField              | DecimalField                                                                                            |
+| DurationField             | DurationField                                                                                           |
+| EmailField                | EmailField                                                                                              |
+| FileField                 | FileField                                                                                               |
+| FilePathField             | FilePathField                                                                                           |
+| FloatField                | FloatField                                                                                              |
+| ForeignKey                | ModelChoiceField (see below)                                                                            |
+| ImageField                | ImageField                                                                                              |
+| IntegerField              | IntegerField                                                                                            |
+| IPAddressField            | IPAddressField                                                                                          |
+| GenericIPAddressField     | GenericIPAddressField                                                                                   |
+| ManyToManyField           | ModelMultipleChoiceField (see below)                                                                    |
+| NullBooleanField          | NullBooleanField                                                                                        |
+| PositiveIntegerField      | IntegerField                                                                                            |
+| PositiveSmallIntegerField | IntegerField                                                                                            |
+| SlugField                 | SlugField                                                                                               |
+| SmallAutoField            | Not represented in the form                                                                             |
+| SmallIntegerField         | IntegerField                                                                                            |
+| TextField                 | CharField with widget=forms.Textarea                                                                    |
+| TimeField                 | TimeField                                                                                               |
+| URLField                  | URLField                                                                                                |
+| UUIDField                 | UUIDField                                                                                               |
++---------------------------+---------------------------------------------------------------------------------------------------------+
+
+
+
+
+
+
+
+
+
+

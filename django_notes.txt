@@ -4,7 +4,7 @@ py manage.py startapp firstApp			 # Creation of Application in that project
 										 # Define view function inside views.py 
 										 # Define url-pattern for our view inside urls.py
 django-admin migrate                     # synchronize the database state with your current state project models and migrations
-django-admin makemigrations              # create new migrations to the database based on the changes detected in the models
+django-admin makemigrations              # create new migrations to the database based on the changes detected in the models - After Model.py cahnges everytime
 py manage.py runserver					 # Start Server 
 										 # Send the request
 										 
@@ -120,6 +120,7 @@ Two types - 1) Django forms
 			form = Myform(request.POST)						# create a form instance and populate it with data from the request:
 			if form.is_valid():								# check whether it's valid:
 				print(form.cleaned_data.get('name'))		# process the data in form.cleaned_data as required
+				# fname = request.POST["firstname"]
 				return HttpResponseRedirect('/thanks/')		# redirect to a new URL:
 				# return HttpResponse("<h1>" + form.cleaned_data.get("name") + "</h1>")
 		else:												# if a GET (or any other method) we'll create a blank form			
@@ -221,6 +222,7 @@ https://simpleisbetterthancomplex.com/tutorial/2018/11/28/advanced-form-renderin
 		OR
 		---
 		
+		from .forms import AddressForm
 		from django.shortcuts import render				# Function based
 		def AddressFormView(request):
 			form_class = AddressForm

@@ -88,6 +88,23 @@ HTML Templates
 	{% endblock %}
 =================================================
 
+STATIC FILES
+------------
+
+- Create static directory inside App folder all static files css,js will fetched from here by default
+
+In template write:
+
+	{% load static %}
+	<link rel="stylesheet" href="{% static 'bs.css' %}">
+
+- When you want to put static files at project level add project/settings.py above STATIC_URL = "/static/"
+
+	STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
+	
+
+=================================================
+
 FORMS
 -----
 Two types - 1) Django forms
@@ -156,7 +173,7 @@ Two types - 1) Django forms
 	return render(request,'index.html')
 
 
-2) Crispy Forms(Form handling with class-based views) - 
+3) Crispy Forms(Form handling with class-based views) - 
 https://simpleisbetterthancomplex.com/tutorial/2018/11/28/advanced-form-rendering-with-django-crispy-forms.html
 ---------------	
 
@@ -265,9 +282,9 @@ https://simpleisbetterthancomplex.com/tutorial/2018/11/28/advanced-form-renderin
 		{% block content %}
 		  <form method="post">
 			{% csrf_token %}
-			<div class="form-row">
-			  <div class="form-group col-md-6 mb-0">
-				{{ form.email|as_crispy_field }}
+			<div class="form-row">						# Add row in form
+			  <div class="form-group col-md-6 mb-0">	
+				{{ form.email|as_crispy_field }}		# get form variable from views.py, email defined in forms.py
 			  </div>
 			  <div class="form-group col-md-6 mb-0">
 				{{ form.password|as_crispy_field }}
@@ -305,6 +322,109 @@ Django CRUD
 -----------
 
 https://www.javatpoint.com/django-crud-example
+
+
+=================================================
+
+Django Models with forms - "forms_user" table will be created and data will be saved in table
+------------------------
+
+0) Create templates/base.html
+
+	{% load static %}
+
+	<!DOCTYPE html>
+	<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<link rel="stylesheet" href="{% static 'bs.css' %}">
+
+		<title>Crispy test</title>
+	</head>
+
+	<body>
+		<div class='container'>
+			{% block content %}
+			{% endblock %}
+		</div>
+	</body>
+
+	</html>
+
+1) Create templates/index.html
+
+	{% extends 'base.html' %}
+
+	{% load crispy_forms_tags %}
+
+	{% block content %}
+	<form method='POST'>
+		{% csrf_token %}
+		<div class="form-row">
+			<div class="form-group col-md-6 mb-0">
+				{{ form.name | as_crispy_field }}
+			</div>
+		</div>
+		<div class="form-row">
+			<div class='form-group col-md-6 mb-0'>
+				{{ form.email | as_crispy_field }}
+			</div>
+		</div>
+		<div class="form-row">
+			<div class='form-group col-md-6 mb-0'>
+				{{ form.password | as_crispy_field }}
+			</div>
+		</div>
+		<div class='form-group col-md-6 mb-0'>
+			<button type="submit" class="btn btn-primary">Submit</button>
+		</div>
+	</form>
+	{% endblock %}
+
+2) Create model
+
+	class User(models.Model):
+		name = models.CharField(max_length=300, unique=True)
+		email = models.CharField(max_length=300)
+		password = models.CharField(max_length=10)
+		
+3) Create forms.py 
+
+	from django import forms
+	from .models import User	# import model to extend
+
+	class IndexForm(forms.ModelForm):  # Extend(Overwrite) class User from models
+		email = forms.EmailField(widget=forms.TextInput(attrs={"placeholder": "Email"}))
+		password = forms.CharField(widget=forms.PasswordInput)
+
+		class Meta:
+			model = User
+			# fields = ["name", "email", "password"]	# only selected fild will be available in template
+			fields = "__all__"
+
+4) views.py
+
+	from django.shortcuts import render
+	from .forms import IndexForm					#import forms.py
+	from django.http import HttpResponseRedirect
+
+	# Create your views here.
+	def index(requests):
+		form = IndexForm()
+		if requests.method == "POST":
+			form = IndexForm(requests.POST)
+			if form.is_valid():
+				form.save()
+				return HttpResponseRedirect("/")
+		return render(requests, "index.html", {"form": form})
+
+
+5) Write urls.py and download static locally
+
+
 
 
 

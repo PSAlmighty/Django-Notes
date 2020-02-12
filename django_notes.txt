@@ -57,7 +57,8 @@ HTML Templates
 --------------
 
 1) templates/base.html
-	
+----------------------
+
 	<!doctype html>
 	<html lang="en">
 		<head>
@@ -74,6 +75,7 @@ HTML Templates
 	</html>
 
 2) Extend template
+------------------
 
 	{% extends 'base.html' %}
 
@@ -86,6 +88,26 @@ HTML Templates
 		<button type="submit" class="btn btn-primary">Sign in</button>
 	  </form>
 	{% endblock %}
+	
+3) TemplateView
+---------------
+- App/views.py
+
+	from django.views.generic.base import TemplateView
+	
+	class Home(TemplateView):					# class
+		template_name = "index.html"			# path to templates/index.html
+
+- project/urls.py
+
+	path("", views.Home.as_view(), name="home"),	# using .as_view()
+
+4) redirect()									# same as  HttpResponseRedirect search here for more info
+-------------	
+	from django.shortcuts import redirect
+	def my_view(request):
+		return redirect('/some/url/')
+		
 =================================================
 
 STATIC FILES
@@ -328,6 +350,7 @@ https://www.javatpoint.com/django-crud-example
 
 Django Models with forms - "forms_user" table will be created and data will be saved in table
 ------------------------
+# https://djangosnippets.org/snippets/10548/
 
 0) Create templates/base.html
 

@@ -1,0 +1,100 @@
+
+Grid options
+------------
+
++---------------------+-------------------------------------+--------------------------------------------------+--------------------------------------------------+--------------------------------------------------+
+|                     | Extra small devices Phones (<768px) |          Small devices Tablets (≥768px)          |         Medium devices Desktops (≥992px)         |         Large devices Desktops (≥1200px)         |
++---------------------+-------------------------------------+--------------------------------------------------+--------------------------------------------------+--------------------------------------------------+
+| Grid behavior       | Horizontal at all times             | Collapsed to start, horizontal above breakpoints | Collapsed to start, horizontal above breakpoints | Collapsed to start, horizontal above breakpoints |
+| Max container width | None (auto)                         | 750px                                            | 970px                                            | 1170px                                           |
+| Class prefix        | .col-xs-                            | .col-sm-                                         | .col-md-                                         | .col-lg-                                         |
+| # of columns        | 12                                  | 12                                               | 12                                               | 12                                               |
++---------------------+-------------------------------------+--------------------------------------------------+--------------------------------------------------+--------------------------------------------------+
+
+Basic Grid Structure
+--------------------
+
+<div class = "container">
+
+   <div class = "row">
+      <div class = "col-*-*"></div>
+      <div class = "col-*-*"></div>
+   </div>
+   
+   <div class = "row">...</div>
+	
+</div>
+
+IMPORTANT:
+---------
+container - container 
+row/form-row - check if one element in single row
+form-group/col-md-6 - bound to label and inputs
+form-control - individual to each input
+
+Example:
+-------
+<div class="container">
+	<form>
+	  <div class="form-row">				# with row user can add simple row but form-row will optimize space with multiple input in a row
+		<div class="form-group col-md-6">
+		  <label for="inputEmail4">Email</label>
+		  <input type="email" class="form-control" id="inputEmail4" placeholder="Email">
+		</div>
+		<div class="form-group col-md-6">
+		  <label for="inputPassword4">Password</label>
+		  <input type="password" class="form-control" id="inputPassword4" placeholder="Password">
+		</div>
+	  </div>								# one column two row as col-md-6 + col-md-6. This can be replace by two <div class="col"></div>
+	  <div class="form-group">
+		<label for="inputAddress">Address</label>
+		<input type="text" class="form-control" id="inputAddress" placeholder="1234 Main St">
+	  </div>
+	  <div class="form-group">
+		<label for="inputAddress2">Address 2</label>
+		<input type="text" class="form-control" id="inputAddress2" placeholder="Apartment, studio, or floor">
+	  </div>
+	  <div class="form-row">
+		<div class="form-group col-md-6">
+		  <label for="inputCity">City</label>
+		  <input type="text" class="form-control" id="inputCity">
+		</div>
+		<div class="form-group col-md-4">
+		  <label for="inputState">State</label>
+		  <select id="inputState" class="form-control">
+			<option selected>Choose...</option>
+			<option>...</option>
+		  </select>
+		</div>
+		<div class="form-group col-md-2">
+		  <label for="inputZip">Zip</label>
+		  <input type="text" class="form-control" id="inputZip">
+		</div>
+	  </div>
+	  <div class="form-group">
+		<div class="form-check">
+		  <input class="form-check-input" type="checkbox" id="gridCheck">
+		  <label class="form-check-label" for="gridCheck">
+			Check me out
+		  </label>
+		</div>
+	  </div>
+	  <button type="submit" class="btn btn-primary">Sign in</button>
+	</form>
+</div>
+
+==========================================================================
+
+Button
+------
+
+<button type="button" class="btn btn-primary">Primary</button>
+<button type="button" class="btn btn-secondary">Secondary</button>
+<button type="button" class="btn btn-success">Success</button>	#color green
+<button type="button" class="btn btn-danger">Danger</button>	#color red
+<button type="button" class="btn btn-warning">Warning</button>	#color yellow
+<button type="button" class="btn btn-info">Info</button>		#color sky blue
+<button type="button" class="btn btn-light">Light</button>		#color white
+<button type="button" class="btn btn-dark">Dark</button>		#color black
+
+<button type="button" class="btn btn-link">Link</button>		#color blue hyperlink

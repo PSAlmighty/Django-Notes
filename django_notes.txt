@@ -454,6 +454,53 @@ Django Models with forms - "forms_user" table will be created and data will be s
 
 =================================================
 
+Django Form Save
+----------------
+https://stackoverflow.com/questions/39183155/django-with-html-forms
+
+if form.is_valid():
+    name = form.cleaned_data['name'] 		#name should be defined in model/forms.py as well in html template {{ form.name }}
+    number = form.cleaned_data['phone_number']
+    p = Person(name=name, phone_number=number, date_subscribed=datetime.now(), messages_received=0)
+    p.save()
+	
+	
+OR
+--
+
+<input type="text" class="form-control" name="username" id="username" placeholder="Username" >
+
+username = requests.POST.get("username")	# can directly fetch by name and not id
+
+=================================================
+
+Generic Views
+-------------
+
+TemplateView – render a given template
+RedirectView – redirect to a given URL
+DetailView – show full details of an object
+ListView – show a collection of an object
+CreateView – render a form to create an object, provides validation and updates database
+UpdateView – render a form to edit an object, provides validation and updates database
+DeleteVew – GET method show confirmation screen, POST method delete object from database
+
+View --+------------------------- RedirectView
+       |
+       +-- GenericView -------+-- TemplateView
+       |                      |
+       |                      +-- FormView
+       |
+       +-- GenericModelView --+-- ListView
+                              |
+                              +-- DetailView
+                              |
+                              +-- CreateView
+                              |
+                              +-- UpdateView
+                              |
+                              +-- DeleteView
+
 
 Fields
 ---------------------

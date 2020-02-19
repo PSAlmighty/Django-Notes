@@ -101,6 +101,16 @@ HTML Templates
 - project/urls.py
 
 	path("", views.Home.as_view(), name="home"),	# using .as_view()
+	
+	
+	OR
+	---
+
+- project/urls.py
+	
+	from django.views.generic.base import TemplateView
+	path("", TemplateView.as_view(template_name='index.html'), name="home"),	# No need to create view	
+	
 
 4) redirect()									# same as  HttpResponseRedirect search here for more info
 -------------	
@@ -501,7 +511,35 @@ View --+------------------------- RedirectView
                               |
                               +-- DeleteView
 
+==================================================
 
+Views:
+------
+https://docs.djangoproject.com/en/3.0/ref/class-based-views/
+
+Base views
+	View
+	TemplateView
+	RedirectView
+Generic display views
+	DetailView
+	ListView
+Generic editing views
+	FormView
+	CreateView
+	UpdateView
+	DeleteView
+Generic date views
+	ArchiveIndexView
+	YearArchiveView
+	MonthArchiveView
+	WeekArchiveView
+	DayArchiveView
+	TodayArchiveView
+	DateDetailView
+
+
+=========================================================
 Fields
 ---------------------
 

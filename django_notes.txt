@@ -139,10 +139,120 @@ In template write:
 
 FORMS
 -----
-Two types - 1) Django forms
-			2) HTML forms
+Two types - 1) Model forms
+			2) Django core forms
+			3) HTML forms
+			4) Crisy forms
 
-1) Django Forms
+1) Model forms
+
+	Django Models with forms - "forms_user" table will be created and data will be saved in table
+	------------------------
+	# https://djangosnippets.org/snippets/10548/
+	
+	-1) Add app 'crispy_forms' in settings.py
+	  and add CRISPY_TEMPLATE_PACK = "bootstrap4"		#small cap
+
+	0) Create templates/base.html
+
+		{% load static %}
+
+		<!DOCTYPE html>
+		<html lang="en">
+
+		<head>
+			<meta charset="UTF-8">
+			<meta name="viewport" content="width=device-width, initial-scale=1.0">
+			<meta http-equiv="X-UA-Compatible" content="ie=edge">
+			<link rel="stylesheet" href="{% static 'bs.css' %}">
+
+			<title>Crispy test</title>
+		</head>
+
+		<body>
+			<div class='container'>
+				{% block content %}
+				{% endblock %}
+			</div>
+		</body>
+
+		</html>
+
+	1) Create templates/index.html
+
+		{% extends 'base.html' %}
+
+		{% load crispy_forms_tags %}
+
+		{% block content %}
+		<form method='POST'>
+			{% csrf_token %}
+			<div class="form-row">
+				<div class="form-group col-md-6 mb-0">
+					{{ form.name | as_crispy_field }}
+				</div>
+			</div>
+			<div class="form-row">
+				<div class='form-group col-md-6 mb-0'>
+					{{ form.email | as_crispy_field }}
+				</div>
+			</div>
+			<div class="form-row">
+				<div class='form-group col-md-6 mb-0'>
+					{{ form.password | as_crispy_field }}
+				</div>
+			</div>
+			<div class='form-group col-md-6 mb-0'>
+				<button type="submit" class="btn btn-primary">Submit</button>
+			</div>
+		</form>
+		{% endblock %}
+
+	2) Create model
+
+		class User(models.Model):
+			name = models.CharField(max_length=300, unique=True, db_column="Name")	# db_column : State db column name
+			email = models.CharField(max_length=300, db_column="Email")				# https://books.agiliq.com/projects/django-orm-cookbook/en/latest/column_name.html
+			password = models.CharField(max_length=10, db_column="Password")
+			
+			class Meta:
+				db_table = "Login"			# Create/rename db table
+			
+	3) Create forms.py 
+
+		from django import forms
+		from .models import User	# import model to extend
+
+		class IndexForm(forms.ModelForm):  # Extend(Overwrite) class User from models
+			email = forms.EmailField(widget=forms.TextInput(attrs={"placeholder": "Email"}))
+			password = forms.CharField(widget=forms.PasswordInput)
+
+			class Meta:
+				model = User
+				# fields = ["name", "email", "password"]	# only selected fild will be available in template
+				fields = "__all__"
+
+	4) views.py
+
+		from django.shortcuts import render
+		from .forms import IndexForm					#import forms.py
+		from django.http import HttpResponseRedirect
+
+		# Create your views here.
+		def index(requests):
+			form = IndexForm()
+			if requests.method == "POST":
+				form = IndexForm(requests.POST)
+				if form.is_valid():
+					form.save()
+					return HttpResponseRedirect("/")
+			return render(requests, "index.html", {"form": form})
+
+
+	5) Write urls.py and download static locally
+
+
+2) Django Forms
 ---------------
 
 	1) Create form in html template
@@ -178,7 +288,7 @@ Two types - 1) Django forms
 		return render(request, 'index.html', {'form': form})
 	
 	
-2) HTML Forms
+3) HTML Forms
 ---------------	
 
 	1) Create form in html template
@@ -205,7 +315,7 @@ Two types - 1) Django forms
 	return render(request,'index.html')
 
 
-3) Crispy Forms(Form handling with class-based views) - 
+4) Crispy Forms(Form handling with class-based views) - 
 https://simpleisbetterthancomplex.com/tutorial/2018/11/28/advanced-form-rendering-with-django-crispy-forms.html
 ---------------	
 
@@ -357,106 +467,6 @@ https://www.javatpoint.com/django-crud-example
 
 
 =================================================
-
-Django Models with forms - "forms_user" table will be created and data will be saved in table
-------------------------
-# https://djangosnippets.org/snippets/10548/
-
-0) Create templates/base.html
-
-	{% load static %}
-
-	<!DOCTYPE html>
-	<html lang="en">
-
-	<head>
-		<meta charset="UTF-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<meta http-equiv="X-UA-Compatible" content="ie=edge">
-		<link rel="stylesheet" href="{% static 'bs.css' %}">
-
-		<title>Crispy test</title>
-	</head>
-
-	<body>
-		<div class='container'>
-			{% block content %}
-			{% endblock %}
-		</div>
-	</body>
-
-	</html>
-
-1) Create templates/index.html
-
-	{% extends 'base.html' %}
-
-	{% load crispy_forms_tags %}
-
-	{% block content %}
-	<form method='POST'>
-		{% csrf_token %}
-		<div class="form-row">
-			<div class="form-group col-md-6 mb-0">
-				{{ form.name | as_crispy_field }}
-			</div>
-		</div>
-		<div class="form-row">
-			<div class='form-group col-md-6 mb-0'>
-				{{ form.email | as_crispy_field }}
-			</div>
-		</div>
-		<div class="form-row">
-			<div class='form-group col-md-6 mb-0'>
-				{{ form.password | as_crispy_field }}
-			</div>
-		</div>
-		<div class='form-group col-md-6 mb-0'>
-			<button type="submit" class="btn btn-primary">Submit</button>
-		</div>
-	</form>
-	{% endblock %}
-
-2) Create model
-
-	class User(models.Model):
-		name = models.CharField(max_length=300, unique=True)
-		email = models.CharField(max_length=300)
-		password = models.CharField(max_length=10)
-		
-3) Create forms.py 
-
-	from django import forms
-	from .models import User	# import model to extend
-
-	class IndexForm(forms.ModelForm):  # Extend(Overwrite) class User from models
-		email = forms.EmailField(widget=forms.TextInput(attrs={"placeholder": "Email"}))
-		password = forms.CharField(widget=forms.PasswordInput)
-
-		class Meta:
-			model = User
-			# fields = ["name", "email", "password"]	# only selected fild will be available in template
-			fields = "__all__"
-
-4) views.py
-
-	from django.shortcuts import render
-	from .forms import IndexForm					#import forms.py
-	from django.http import HttpResponseRedirect
-
-	# Create your views here.
-	def index(requests):
-		form = IndexForm()
-		if requests.method == "POST":
-			form = IndexForm(requests.POST)
-			if form.is_valid():
-				form.save()
-				return HttpResponseRedirect("/")
-		return render(requests, "index.html", {"form": form})
-
-
-5) Write urls.py and download static locally
-
 
 
 

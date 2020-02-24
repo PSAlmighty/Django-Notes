@@ -488,6 +488,17 @@ if form.is_valid():
     number = form.cleaned_data['phone_number']
     p = Person(name=name, phone_number=number, date_subscribed=datetime.now(), messages_received=0)
     p.save()
+    
+    OR
+    --
+    
+	obj = Person() #gets new object
+	obj.business_name = form.cleaned_data['business_name']
+	obj.business_email = form.cleaned_data['business_email']
+	obj.business_phone = form.cleaned_data['business_phone']
+	obj.business_website = form.cleaned_data['business_website']
+	#finally save the object in db
+	obj.save()
 	
 	
 OR

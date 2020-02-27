@@ -59,8 +59,14 @@ from .models import ContactModel
 def index(request):
     form = ContactForm()
     if request.method == "POST":
+        #name=request.POST['name']              # fetch value by name directly without clean
         form = ContactForm(request.POST, request.FILES)
         if form.is_valid():
+            # form.cleaned_data                     #print json with field name and respective value
+            # name = form.cleaned_data['name'] 		#name should be defined in model/forms.py as well in html template {{ form.name }}
+            # number = form.cleaned_data['phone_number']
+            # p = Person(name=name, phone_number=number, date_subscribed=datetime.now(), messages_received=0)
+            # p.save()
             form.save()
             return redirect("/")
     records = ContactModel.objects.all()

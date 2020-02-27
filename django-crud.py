@@ -39,17 +39,17 @@ from django import forms
 from .models import ContactModel
 
 class ContactForm(forms.ModelForm):
+    name = forms.CharField(initial='pranav',label='Enter Name')        #set initial value of field can be only defined in forms and not in models
 
-    class Meta:
-        model = ContactModel 
-        fields = '__all__'
-    
-    def clean_name(self):
-    	name = self.cleaned_data.get("name")
-    	if len(name)>6:
-    		raise forms.ValidationError('Name size should be less than 6')
-    	return name
+	class Meta:
+		model = ContactModel
+		fields = '__all__'
 
+	def clean_name(self):
+		name = self.cleaned_data.get("name")
+		if len(name)>6:
+			raise forms.ValidationError('Name size should be less than 6')
+		return name
 
 views.py
 --------

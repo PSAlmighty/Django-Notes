@@ -43,6 +43,12 @@ class ContactForm(forms.ModelForm):
     class Meta:
         model = ContactModel 
         fields = '__all__'
+    
+    def clean_name(self):
+    	name = self.cleaned_data.get("name")
+    	if len(name)>6:
+    		raise forms.ValidationError('Name size should be less than 6')
+    	return name
 
 
 views.py
